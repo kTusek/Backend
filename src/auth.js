@@ -5,14 +5,14 @@ import connect from './db.js';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-( async () =>{
+(async () =>{
 let db = await connect();
 await db.collection("users").createIndex({email: 1}, {unique: true});
 })();
 
 export default {
    async registerUser(user){
-        console.log( 'Dobrodošli', user);
+        console.log( 'Welcome: ', user);
         let db = await connect();
 
         let doc = {
@@ -23,29 +23,28 @@ export default {
         };
         try {
            let result = await db.collection("users").insertOne(doc);
-           if(result && result.inesrtedId)
-               return result.insertedId; 
+            if(result && result.inesrtedId)
+            {
+                return result.insertedId; 
+            }
         }
         catch(e){
-            if(e.name == "MongoError" && e.code == 11000){
-                throw new Error("User with email: " + userData.email + " already exists!")
+            if(e.name == "MongoError" || e.code == 11000){
+                throw new Error("User with email already exists!")
             }
-           console.error(e);
-           console.log(error)
         }
 
     },
-    
-    async authenticateuser(email, password){
+    async authenticateUser(email, password){
         
         let db = await connect()
-        let user = await db.collection("users").findOne({email:email})
+        let user = await db.collection("users").findOne({ email:email })
         
-        if(bcrypt.compare(password, user.password)&&user.password===password){
+        if(user && user.password && (await bcrypt.compare(password, user.password))){
             delete user.password
             let token = jwt.sign(user, process.env.JWT_SECRET, {
                 algorithm : "HS512",
-                expiresIn: "1 week"
+                expiresIn: "2 weeks"
             }) 
             
             return{
@@ -61,7 +60,6 @@ export default {
         }
     },
     
-
     verify(req, res, next){
         try{
             let authorization = req.headers.authorization.split(' ');
