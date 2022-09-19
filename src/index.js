@@ -1,10 +1,10 @@
 import express from 'express';
 import connect from './db.js';
 import cors from 'cors';
-import auth from './auth.js';
+import Auth from './auth.js';
 
 const app = express() 
-const port = 3001
+const port = 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -14,7 +14,7 @@ app.post('/user', async (req , res) =>{
     let userData = req.body;
     let id;
     try{
-        id = await auth.registerUser(userData);
+        id = await Auth.registerUser(userData);
     }
     catch(e){
         res.status(500).json({ error: e.message });
@@ -32,7 +32,7 @@ app.get('/users', async (req , res) =>{
     res.json(results);
 });
 
-app.get('/secret', [auth.verify], (req,res) => {
+app.get('/secret', [Auth.verify], (req,res) => {
     res.json({message: "This is a secret" + req.jwt.email})
 })
 
@@ -43,7 +43,7 @@ app.post('/login', async (req, res) =>{
     let userPassword = user.password 
     
     try{
-       let authResult = await auth.authenticateUser(userEmail, userPassword);
+       let authResult = await Auth.authenticateUser(userEmail, userPassword);
        res.json(authResult);
     }
     catch(e) {
