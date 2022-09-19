@@ -4,7 +4,7 @@ import cors from 'cors';
 import Auth from './auth.js';
 
 const app = express() 
-const port = 5000;
+const port = 3100;
 
 app.use(cors());
 app.use(express.json());
@@ -51,4 +51,10 @@ app.post('/login', async (req, res) =>{
     }
 })
 
+app.post('/comment', async (req , res) =>{
+    let commentData = req.body;
+    let db = await connect();
+	let result = await db.collection("comments").insertOne(commentData);
+    res.json(result);
+});
 app.listen(port, () => console.log(`Listening on port: ${port}!`))
