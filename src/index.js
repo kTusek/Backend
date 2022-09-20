@@ -57,4 +57,14 @@ app.post('/comment', async (req , res) =>{
 	let result = await db.collection("comments").insertOne(commentData);
     res.json(result);
 });
+
+app.get("/comments", async (req, res) => {
+    let db = await connect();   
+
+    let results = await db.collection("comments").find({}).toArray();
+    console.log(results);
+    res.json(results);
+    
+});
+
 app.listen(port, () => console.log(`Listening on port: ${port}!`))
