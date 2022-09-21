@@ -52,19 +52,34 @@ app.post('/login', async (req, res) =>{
 })
 
 app.post('/comment', async (req , res) =>{
+    try{
     let commentData = req.body;
     let db = await connect();
 	let result = await db.collection("comments").insertOne(commentData);
     res.json(result);
+    }
+    catch(e) {
+        res.status(401).json({ error: e.message })
+    }
 });
 
 app.get("/comments", async (req, res) => {
     let db = await connect();   
-
     let results = await db.collection("comments").find({}).toArray();
     console.log(results);
     res.json(results);
-    
+});
+
+app.post('/laundry_data', async (req , res) =>{
+    try{
+    let laundryData = req.body;
+    let db = await connect();
+	let result = await db.collection("LaundryData").insertOne(laundryData);
+    res.json(result);
+    }
+    catch(e) {
+        res.status(401).json({ error: e.message })
+    }
 });
 
 app.listen(port, () => console.log(`Listening on port: ${port}!`))
