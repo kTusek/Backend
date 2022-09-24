@@ -82,4 +82,22 @@ app.post('/laundry_data', async (req , res) =>{
     }
 });
 
+app.get("/laundry_data", async (req, res) => {
+    let db = await connect();   
+    let results = await db.collection("LaundryData").find({}).toArray();
+    console.log(results);
+    res.json(results);
+});
+
+app.get("/laundry_data/:user", async (req, res) => {
+    let db = await connect();
+
+    let currentUser = req.params.user;
+
+    let results = await db.collection("LaundryData").find({ user: currentUser }).toArray();
+    console.log("Results: ",results);
+    res.json(results);
+    
+});
+
 app.listen(port, () => console.log(`Listening on port: ${port}!`))

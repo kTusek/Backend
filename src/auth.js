@@ -54,9 +54,7 @@ export default {
         }
        
         else{
-            
             throw new Error("cannot authenticate")
-            
         }
     },
     
