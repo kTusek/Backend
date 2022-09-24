@@ -2,6 +2,7 @@ import express from 'express';
 import connect from './db.js';
 import cors from 'cors';
 import Auth from './auth.js';
+import mongo from 'mongodb';
 
 const app = express() 
 const port = 3100;
@@ -98,6 +99,21 @@ app.get("/laundry_data/:user", async (req, res) => {
     console.log("Results: ",results);
     res.json(results);
     
+});
+
+app.get("/comments/delete/:id", async (req, res) => {
+	let id = req.params.id;
+	let db = await connect();
+
+	let result = await db.collection("comments").deleteOne({ _id: mongo.ObjectId(id) });
+
+	if (result && result.deletedCount == 1) {
+		res.json(result);
+	} else {
+		res.json({
+			status: "fail",
+		});
+	}
 });
 
 app.listen(port, () => console.log(`Listening on port: ${port}!`))
